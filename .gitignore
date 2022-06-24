@@ -1,0 +1,10 @@
+.pytest_cache
+__pycache__
+.env
+
+save.json
+save.yaml
+*save*.*
+!*save*.py
+
+*.env
