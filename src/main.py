@@ -6,7 +6,7 @@ import time
 import re
 import ruamel.yaml as yaml
 import pathlib
-#import json
+import json
 #import asyncio
 import random
 #import traceback
@@ -31,6 +31,8 @@ from utils import *
 
 from exception import AuthenticationException
 
+import sqlite3
+
 save: dict = {}
 
 yml = yaml.YAML()
@@ -39,6 +41,8 @@ VERSION = Version(major=2, minor=2, patch=1)
 LOG = False
 COINNAME = "Karpcoins"
 MAINTANANCE = False
+
+#database = sqlite3.connect("save.sqlite", 10)
 
 autoResponses = {}
 
@@ -62,11 +66,15 @@ def saveData():
 def loadData():
     global save
     with open('save.yaml', 'r') as infile:
-        save = yml.load(infile)
+        save = yaml.safe_load(infile)
 
 loadData()
+saveData()
+print(save)
 
 def getPrefix(bot: commands.Bot, message: discord.Message):
+    if not save['guilds']:
+        save['guilds'] = {}
     if message.guild:
         if message.guild.id in save['guilds']:
             if 'prefix' in save['guilds'][message.guild.id]:
