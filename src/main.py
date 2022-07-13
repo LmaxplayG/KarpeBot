@@ -35,7 +35,7 @@ save: dict = {}
 
 yml = yaml.YAML()
 
-VERSION = Version(major=2, minor=2, patch=0)
+VERSION = Version(major=2, minor=2, patch=1)
 LOG = False
 COINNAME = "Karpcoins"
 MAINTANANCE = False
@@ -1129,7 +1129,7 @@ async def help(ctx: commands.Context, command: str = "", arg1: str = ""):
             foundcommands = list(dict.fromkeys(foundcommands))
             embed = discord.Embed(
                 title = "Help - Search results",
-                description = " - " + "\n - ".join([f"**{command.name} ({'| '.join(command.aliases)})**" for command in foundcommands]).replace(" ()", ""),
+                description = " - " + "\n - ".join([f"**{command.name} ({' | '.join(command.aliases)})**" for command in foundcommands]).replace(" ()", ""),
                 color = discord.Colour(0x0088FF)
             )
             await ctx.send(embed=embed)
