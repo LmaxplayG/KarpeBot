@@ -84,12 +84,12 @@ except FileNotFoundError:
 intents = discord.Intents.all()
 
 LOG = False
-coinName = "Karpcoins"
-maintanananceMode = False
+COINNAME = "Karpcoins"
+MAINTANANCE = False
 
 autoResponses = {}
 
-version = Version(major=2, minor=1, patch=0)
+version = Version(major=2, minor=1, patch=1)
 
 bot = commands.Bot(command_prefix=(getPrefix), intents=intents, owner_ids=[941433256010727484])
 
@@ -542,7 +542,7 @@ async def addcoins(ctx: commands.Context, member: commands.MemberConverter, amou
         return
 
     await addCoins(member, amount)
-    await ctx.send(f"Added {amount} {coinName} to {member.name}\nThey now have {save['users'][member.id]['coins']} {coinName}")
+    await ctx.send(f"Added {amount} {COINNAME} to {member.name}\nThey now have {save['users'][member.id]['coins']} {COINNAME}")
 
 # Command to remove coins from a user
 @bot.command(aliases=['removecash', 'removemoney'], help="""
@@ -569,7 +569,7 @@ async def removecoins(ctx: commands.Context, member: commands.MemberConverter, a
         return
 
     await addCoins(member, -amount)
-    await ctx.send(f"Removed {amount} {coinName} from {member.name}\nThey now have {save['users'][member.id]['coins']} {coinName}")
+    await ctx.send(f"Removed {amount} {COINNAME} from {member.name}\nThey now have {save['users'][member.id]['coins']} {COINNAME}")
 
 # Command to set the amount of coins a user has
 @bot.command(aliases=['setcash', 'setmoney'], help="""
@@ -632,7 +632,7 @@ async def balance(ctx: commands.Context, member: commands.MemberConverter = None
     if not 'coins' in save['users'][member.id]:
         save['users'][member.id]['coins'] = 0
     coins = save['users'][member.id]['coins']
-    await ctx.send(f"{member.name} has {coins} {coinName}")
+    await ctx.send(f"{member.name} has {coins} {COINNAME}")
 
 # Daily command
 @bot.command(aliases=[], help="""
@@ -660,7 +660,7 @@ async def daily(ctx: commands.Context):
     # Check if the user has already claimed their daily today (compare the current day)
     if save['users'][ctx.author.id]['daily'] <= (time.time() - 86400):
         await addCoins(ctx.author, daily_coins)
-        embed = discord.Embed(title = f"Daily coins", description = f"You have received {daily_coins} {coinName}", color = discord.Colour(0x0088FF))
+        embed = discord.Embed(title = f"Daily coins", description = f"You have received {daily_coins} {COINNAME}", color = discord.Colour(0x0088FF))
         embed.set_footer(text=f"You can claim your daily coins again in 24 hours")
         await ctx.send(embed=embed)
         save['users'][ctx.author.id]['daily'] = time.time()
@@ -714,7 +714,7 @@ async def cashflip(ctx: commands.Context, amount: float, bet: str):
     if not 'coins' in save['users'][ctx.author.id]:
         save['users'][ctx.author.id]['coins'] = 0
     if save['users'][ctx.author.id]['coins'] < amount:
-        embed=discord.Embed(title="Cashflip", description=f"You don't have enough coins to bet {amount} {coinName}", color=discord.Colour(0x0088FF))
+        embed=discord.Embed(title="Cashflip", description=f"You don't have enough coins to bet {amount} {COINNAME}", color=discord.Colour(0x0088FF))
         await ctx.send(embed=embed)
         return
     
@@ -749,14 +749,14 @@ async def cashflip(ctx: commands.Context, amount: float, bet: str):
     if coin <= 0.5 and bet == "heads":
         await addCoins(ctx.author, amount * 0.75)
         embed.set_footer(text=f"A 25% fee has been taken from your winnings")
-        embed.description = f"You won {amount * 0.75} {coinName}"
+        embed.description = f"You won {amount * 0.75} {COINNAME}"
     elif coin >= 0.5 and bet == "tails":
         await addCoins(ctx.author, amount * 0.75)
         embed.set_footer(text=f"A 25% fee has been taken from your winnings")
-        embed.description = f"You won {amount * 0.75} {coinName}"
+        embed.description = f"You won {amount * 0.75} {COINNAME}"
     else:
         await addCoins(ctx.author, -amount)
-        embed.description = f"You lost {amount} {coinName}"
+        embed.description = f"You lost {amount} {COINNAME}"
     await ctx.send(embed=embed)
 
 # Pay command
@@ -794,8 +794,8 @@ async def pay(ctx: commands.Context, user: discord.Member, amount: float):
     if not 'coins' in save['users'][ctx.author.id]:
         save['users'][ctx.author.id]['coins'] = 0
     if save['users'][ctx.author.id]['coins'] < amount:
-        embed=discord.Embed(title="Pay", description=f"You don't have enough coins to pay {amount} {coinName}", color=discord.Colour(0x0088FF))
-        embed.set_footer(text=f"You have {save['users'][ctx.author.id]['coins']} {coinName}, {tax}% tax has been taken")
+        embed=discord.Embed(title="Pay", description=f"You don't have enough coins to pay {amount} {COINNAME}", color=discord.Colour(0x0088FF))
+        embed.set_footer(text=f"You have {save['users'][ctx.author.id]['coins']} {COINNAME}, {tax}% tax has been taken")
         await ctx.send(embed=embed)
         return
     
@@ -816,7 +816,7 @@ async def pay(ctx: commands.Context, user: discord.Member, amount: float):
     taxed = amount - originalAmount
     # Round taxed to 2 decimal places
     taxed = round(taxed, 3)
-    embed=discord.Embed(title="Payment succesfull", description=f"You have paid {user.name} {originalAmount} {coinName}\n({taxed} {coinName} have been taxed)", color=discord.Colour(0x0088FF))
+    embed=discord.Embed(title="Payment succesfull", description=f"You have paid {user.name} {originalAmount} {COINNAME}\n({taxed} {COINNAME} have been taxed)", color=discord.Colour(0x0088FF))
     await ctx.send(embed=embed)
 
 # Leaderboard command
@@ -896,7 +896,7 @@ async def leaderboard(ctx: commands.Context):
             memberName = memberName.__str__().replace('_', '\\_')
             coins: float = user[1]['coins']
             coinsStr = coins.__str__().replace("inf", "Infinity")
-            embed.add_field(name = f"{i + 1}. {memberName}", value=f"{coinsStr} {coinName}", inline = False)
+            embed.add_field(name = f"{i + 1}. {memberName}", value=f"{coinsStr} {COINNAME}", inline = False)
         except:
             pass
     await ctx.send(embed=embed)
@@ -1225,7 +1225,7 @@ async def on_message(message: discord.Message):
             # await message.channel.send(f"{nick} has been given {coins} {coinName}")
     
     if LOG:
-        print(f'{Fore.RED}#{message.channel.name} {Fore.YELLOW}"{message.guild.name}" {Fore.GREEN}{message.author.display_name}> {Fore.CYAN}{message.content}{Fore.RESET}'.replace("\n", "\\n"))
+        print(f'{Fore.RED}#{message.channel.name} {Fore.YELLOW}"{message.guild.name}" {Fore.GREEN}{message.author.display_name}#{message.author.discriminator}> {Fore.CYAN}{message.content}{Fore.RESET}'.replace("\n", "\\n"))
         if message.attachments.__len__() > 0:
             for attachment in message.attachments:
                 print(f"{Fore.CYAN}{attachment.url}{Fore.RESET}", end=" ")
@@ -1238,7 +1238,7 @@ async def on_message(message: discord.Message):
             break
 
     # Is the message from an owner?
-    if maintanananceMode and message.author.id != bot.owner.id: 
+    if MAINTANANCE and message.author.id != bot.owner.id: 
         if message.author.id in bot.owner_ids:
             await bot.process_commands(message)
         else:
@@ -1263,8 +1263,8 @@ async def on_message_edit(before: discord.Message, after: discord.Message):
     if before.content == after.content:
         return
     if LOG:
-        print(f'{Fore.GREEN}EDIT Before: {Fore.RED}#{before.channel.name} {Fore.YELLOW}"{before.guild.name}" {Fore.GREEN}{before.author.display_name}> {Fore.CYAN}{before.content}{Fore.RESET}'.replace("\n", "\\n"))
-        print(f'{Fore.GREEN}EDIT After: {Fore.RED}#{before.channel.name} {Fore.YELLOW}"{before.guild.name}" {Fore.GREEN}{before.author.display_name}> {Fore.CYAN}{after.content}{Fore.RESET}'.replace("\n", "\\n"))
+        print(f'{Fore.GREEN}EDIT Before: {Fore.RED}#{before.channel.name} {Fore.YELLOW}"{before.guild.name}" {Fore.GREEN}{before.author.display_name}#{before.author.discriminator}> {Fore.CYAN}{before.content}{Fore.RESET}'.replace("\n", "\\n"))
+        print(f'{Fore.GREEN}EDIT After: {Fore.RED}#{before.channel.name} {Fore.YELLOW}"{before.guild.name}" {Fore.GREEN}{before.author.display_name}#{before.author.discriminator}> {Fore.CYAN}{after.content}{Fore.RESET}'.replace("\n", "\\n"))
 
 @bot.event
 async def on_command_error(ctx: commands.Context, error: commands.CommandError):
