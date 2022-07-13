@@ -1277,6 +1277,11 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError):
             embed = discord.Embed(color=discord.Colour(0xFF0000), title="Permission denied", description="You aren't allowed to do this") #,  description=f"Command  not found")
             await ctx.send(embed=embed)
             return
+        elif isinstance(error.original, PermissionError):
+            print("P")
+            embed = discord.Embed(color=discord.Colour(0xFF0000), title="You don't have permission", description=f"{error.original.args[0]}")
+            await ctx.send(embed=embed)
+            return
         else:
             embed = discord.Embed(color=discord.Colour(0xFF0000), title="An error occured", description=f"```py\n{str(error)}\n```")
             await ctx.send(embed=embed)
