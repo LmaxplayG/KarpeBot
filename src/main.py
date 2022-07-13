@@ -90,7 +90,7 @@ maintanananceMode = False
 
 autoResponses = {}
 
-version = Version(major=1, minor=2, patch=0)
+version = Version(major=1, minor=3, patch=0)
 
 bot = commands.Bot(command_prefix=(getPrefix), intents=intents, owner_ids=[941433256010727484])
 
@@ -113,9 +113,10 @@ Usage:
 async def about(ctx: commands.context.Context):
     embed = nextcord.Embed(title = f"About KarpeBot", description = f"""
 **KarpeBot version {version}**
-Running on {getOSVersion()}
-Python {getPythonVersion()}
-nextcord {getNextcordVersion()}
+OS: {getOSVersion()}
+Python: {getPythonVersion()}
+Nextcord: {getNextcordVersion()}
+Repository: <https://github.com/LmaxplayG/Karpebot>
     """,
     color = nextcord.Colour(0x0088FF)
     )
