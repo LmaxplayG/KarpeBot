@@ -39,6 +39,8 @@ save: dict = {}
 
 yml = yaml.YAML()
 
+version = Version(major=2, minor=1, patch=2)
+
 async def addCoins(member, amount):
     if not 'users' in save:
         save['users'] = {}
@@ -89,7 +91,6 @@ MAINTANANCE = False
 
 autoResponses = {}
 
-version = Version(major=2, minor=1, patch=1)
 
 bot = commands.Bot(command_prefix=(getPrefix), intents=intents, owner_ids=[941433256010727484])
 
@@ -1133,7 +1134,7 @@ async def help(ctx: commands.Context, command: str = "", arg1: str = ""):
             foundcommands = list(dict.fromkeys(foundcommands))
             embed = discord.Embed(
                 title = "Help - Search results",
-                description = " - " + "\n - ".join([f"**{command.name} ({', '.join(command.aliases)})**" for command in foundcommands]),
+                description = " - " + "\n - ".join([f"**{command.name} ({'| '.join(command.aliases)})**" for command in foundcommands]).replace(" ()", ""),
                 color = discord.Colour(0x0088FF)
             )
             await ctx.send(embed=embed)
