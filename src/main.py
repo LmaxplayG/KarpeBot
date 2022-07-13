@@ -19,14 +19,14 @@ import copy
 
 import atexit
 
-from nextcord.types import activity
-import nextcord.client
-import nextcord.abc
-import nextcord.types.activity
-import nextcord.ext.commands
-from nextcord.abc import Snowflake
-from nextcord.ext import commands
-import nextcord.abc
+from discord.types import activity
+import discord.client
+import discord.abc
+import discord.types.activity
+import discord.ext.commands
+from discord.abc import Snowflake
+from discord.ext import commands
+import discord.abc
 
 from colorama import Fore, Back, Style
 
@@ -64,7 +64,7 @@ def loadData():
 
 loadData()
 
-def getPrefix(bot: commands.Bot, message: nextcord.Message):
+def getPrefix(bot: commands.Bot, message: discord.Message):
     if message.guild:
         if message.guild.id in save['guilds']:
             if 'prefix' in save['guilds'][message.guild.id]:
@@ -82,7 +82,7 @@ except FileNotFoundError:
     print(f"{Fore.RED}[ERROR]{Style.RESET_ALL} Could not find save.yaml. Creating it now.")
     with open('save.yaml', 'w') as f:
         yaml.dump(save, f)
-intents = nextcord.Intents.all()
+intents = discord.Intents.all()
 
 LOG = False
 coinName = "Karpcoins"
@@ -90,7 +90,7 @@ maintanananceMode = False
 
 autoResponses = {}
 
-version = Version(major=1, minor=3, patch=0)
+version = Version(major=2, minor=0, patch=0)
 
 bot = commands.Bot(command_prefix=(getPrefix), intents=intents, owner_ids=[941433256010727484])
 
@@ -101,8 +101,8 @@ Usage:
  - `ping`
 """ 
 )
-async def ping(ctx: commands.context.Context):
-    embed = nextcord.Embed(title="Pong!", description=f"{ctx.bot.latency * 1000:.0f}ms", color=0x00ff00)
+async def ping(ctx: commands.Context):
+    embed = discord.Embed(title="Pong!", description=f"{ctx.bot.latency * 1000:.0f}ms", color=0x00ff00)
     await ctx.send(embed=embed)
 
 @bot.command(aliases=["version"], help="""
@@ -110,15 +110,15 @@ Gets the bots about page
 Usage:
  - `about`
 """ )
-async def about(ctx: commands.context.Context):
-    embed = nextcord.Embed(title = f"About KarpeBot", description = f"""
+async def about(ctx: commands.Context):
+    embed = discord.Embed(title = f"About KarpeBot", description = f"""
 **KarpeBot version {version}**
 OS: {getOSVersion()}
 Python: {getPythonVersion()}
-Nextcord: {getNextcordVersion()}
+Pycord: {getDiscordVersion()}
 Repository: <https://github.com/LmaxplayG/Karpebot>
     """,
-    color = nextcord.Colour(0x0088FF)
+    color = discord.Colour(0x0088FF)
     )
     embed.set_footer(text = "Requested by " + ctx.author.name, icon_url = ctx.author.avatar.url)
     
@@ -132,8 +132,8 @@ Usage:
  - `format`
 """,
  )
-async def format(ctx: commands.context.Context):
-    embed = nextcord.Embed(title = f"How to format code", description = """
+async def format(ctx: commands.Context):
+    embed = discord.Embed(title = f"How to format code", description = """
 Use
 \\`\\`\\`
 <code>
@@ -153,7 +153,7 @@ this was achieved by typing
 print("Hello world!")
 \\`\\`\\`
     """,
-    color = nextcord.Colour(0x0088FF)
+    color = discord.Colour(0x0088FF)
     )
 
     embed.set_footer(text = "Requested by " + ctx.author.name, icon_url = ctx.author.avatar.url)
@@ -165,7 +165,7 @@ Kicks the specified user
 Usage:
     - `kick @user <reason>`
 """)
-async def kick(ctx: commands.context.Context, member: commands.MemberConverter, *, reason: str = "No reason specified"):
+async def kick(ctx: commands.Context, member: commands.MemberConverter, *, reason: str = "No reason specified"):
     #if member is invalid, return and give an error
     if not member:
         await ctx.send("Invalid user")
@@ -185,12 +185,12 @@ async def kick(ctx: commands.context.Context, member: commands.MemberConverter, 
         return
 
     if not member.bot:
-        embed = nextcord.Embed(title = f"You have been kicked from {ctx.guild.name}", description = "Reason:```\n{reason}```", color = nextcord.Colour(0x0088FF))
+        embed = discord.Embed(title = f"You have been kicked from {ctx.guild.name}", description = "Reason:```\n{reason}```", color = discord.Colour(0x0088FF))
         await member.send(embed=embed)
 
     await member.kick(reason=reason)
 
-    embed = nextcord.Embed(title = f"{member.name} has been kicked", description = """
+    embed = discord.Embed(title = f"{member.name} has been kicked", description = """
 User {0} has been kicked
 Reason:
 ```
@@ -199,7 +199,7 @@ Reason:
 """.format(
     member.mention,
     reason
-    ), color=nextcord.Colour(0x0088FF))
+    ), color=discord.Colour(0x0088FF))
     await ctx.send(embed=embed)
 
 @bot.command( aliases=[], help="""
@@ -208,11 +208,11 @@ Usage:
     - `ban @user <reason>`
     - `ban <user id> <reason>`
 """)
-async def ban(ctx: commands.context.Context, member: commands.MemberConverter = None, *, reason: str = "No reason specified"):
-    member: nextcord.member = member
+async def ban(ctx: commands.Context, member: commands.MemberConverter = None, *, reason: str = "No reason specified"):
+    member: discord.member = member
     #if member is invalid, return and give an error
     if not member:
-        embed = nextcord.Embed(title = f"Invalid user", description = "Please specify a valid user", color = nextcord.Colour(0xFF0000))
+        embed = discord.Embed(title = f"Invalid user", description = "Please specify a valid user", color = discord.Colour(0xFF0000))
         await ctx.send(embed=embed)
         return
     if member.guild != ctx.guild:
@@ -220,13 +220,13 @@ async def ban(ctx: commands.context.Context, member: commands.MemberConverter = 
     
     # If user is not a mod or higher, return
     if not ctx.author.guild_permissions.ban_members:
-        embed = nextcord.Embed(title = f"You do not have permission to ban this user", description = "You must be a mod or higher to ban this user\nOr have the permission to ban members", color = nextcord.Colour(0xFF0000))
+        embed = discord.Embed(title = f"You do not have permission to ban this user", description = "You must be a mod or higher to ban this user\nOr have the permission to ban members", color = discord.Colour(0xFF0000))
         await ctx.send(embed=embed)
         return
 
     # do we have a higher role than the user?
     if ctx.author.top_role.position <= member.top_role.position:
-        embed = nextcord.Embed(title = f"You do not have permission to ban this user", description = "You need to have a higher role than the user to ban them", color = nextcord.Colour(0xFF0000))
+        embed = discord.Embed(title = f"You do not have permission to ban this user", description = "You need to have a higher role than the user to ban them", color = discord.Colour(0xFF0000))
         await ctx.send(embed=embed)
         return
 
@@ -236,12 +236,12 @@ async def ban(ctx: commands.context.Context, member: commands.MemberConverter = 
         return
 
     if not member.bot:
-        embed = nextcord.Embed(title = f"You have been banned from {ctx.guild.name}", description = "Reason:```\n{reason}```", color = nextcord.Colour(0x0088FF))
+        embed = discord.Embed(title = f"You have been banned from {ctx.guild.name}", description = "Reason:```\n{reason}```", color = discord.Colour(0x0088FF))
         await member.send(embed=embed)
 
     await member.ban(reason=reason)
     
-    embed = nextcord.Embed(title = f"{member.name} has been banned", description = """
+    embed = discord.Embed(title = f"{member.name} has been banned", description = """
 User {0} has been banned
 Reason:
 ```
@@ -250,7 +250,7 @@ Reason:
 """.format(
     member.mention,
     reason
-    ), color=nextcord.Colour(0x0088FF))
+    ), color=discord.Colour(0x0088FF))
     await ctx.send(embed=embed)
 
 # Klck command (fake kick)
@@ -260,7 +260,7 @@ Kicks the specified user
 Usage:
     - `klck @user <reason>`
 """)
-async def klck(ctx: commands.context.Context, member: commands.MemberConverter, *, reason: str = "No reason specified"):
+async def klck(ctx: commands.Context, member: commands.MemberConverter, *, reason: str = "No reason specified"):
     #if member is invalid, return and give an error
     if not member:
         await ctx.send("Invalid user")
@@ -280,10 +280,10 @@ async def klck(ctx: commands.context.Context, member: commands.MemberConverter, 
         return
 
     if not member.bot:
-        embed = nextcord.Embed(title = f"You have been kicked from {ctx.guild.name}", description = "Reason:```\n{reason}```", color = nextcord.Colour(0x0088FF))
+        embed = discord.Embed(title = f"You have been kicked from {ctx.guild.name}", description = "Reason:```\n{reason}```", color = discord.Colour(0x0088FF))
         await member.send(embed=embed)
 
-    embed = nextcord.Embed(title = f"{member.name} has been kicked", description = """
+    embed = discord.Embed(title = f"{member.name} has been kicked", description = """
 User {0} has been kicked
 Reason:
 ```
@@ -292,7 +292,7 @@ Reason:
 """.format(
     member.mention,
     reason
-    ), color=nextcord.Colour(0x0088FF))
+    ), color=discord.Colour(0x0088FF))
     await ctx.send(embed=embed)
 
 @bot.command( aliases=[], help="""
@@ -301,11 +301,11 @@ Usage:
     - `bon @user <reason>`
     - `bon <user id> <reason>`
 """)
-async def bon(ctx: commands.context.Context, member: commands.MemberConverter = None, *, reason: str = "No reason specified"):
-    member: nextcord.member = member
+async def bon(ctx: commands.Context, member: commands.MemberConverter = None, *, reason: str = "No reason specified"):
+    member: discord.member = member
     #if member is invalid, return and give an error
     if not member:
-        embed = nextcord.Embed(title = f"Invalid user", description = "Please specify a valid user", color = nextcord.Colour(0xFF0000))
+        embed = discord.Embed(title = f"Invalid user", description = "Please specify a valid user", color = discord.Colour(0xFF0000))
         await ctx.send(embed=embed)
         return
     if member.guild != ctx.guild:
@@ -313,13 +313,13 @@ async def bon(ctx: commands.context.Context, member: commands.MemberConverter = 
     
     # If user is not a mod or higher, return
     if not ctx.author.guild_permissions.ban_members:
-        embed = nextcord.Embed(title = f"You do not have permission to ban this user", description = "You must be a mod or higher to ban this user\nOr have the permission to ban members", color = nextcord.Colour(0xFF0000))
+        embed = discord.Embed(title = f"You do not have permission to ban this user", description = "You must be a mod or higher to ban this user\nOr have the permission to ban members", color = discord.Colour(0xFF0000))
         await ctx.send(embed=embed)
         return
 
     # do we have a higher role than the user?
     if ctx.author.top_role.position <= member.top_role.position:
-        embed = nextcord.Embed(title = f"You do not have permission to ban this user", description = "You need to have a higher role than the user to ban them", color = nextcord.Colour(0xFF0000))
+        embed = discord.Embed(title = f"You do not have permission to ban this user", description = "You need to have a higher role than the user to ban them", color = discord.Colour(0xFF0000))
         await ctx.send(embed=embed)
         return
 
@@ -329,10 +329,10 @@ async def bon(ctx: commands.context.Context, member: commands.MemberConverter = 
         return
 
     if not member.bot:
-        embed = nextcord.Embed(title = f"You have been banned from {ctx.guild.name}", description = "Reason:```\n{reason}```", color = nextcord.Colour(0x0088FF))
+        embed = discord.Embed(title = f"You have been banned from {ctx.guild.name}", description = "Reason:```\n{reason}```", color = discord.Colour(0x0088FF))
         await member.send(embed=embed)
     
-    embed = nextcord.Embed(title = f"{member.name} has been banned", description = """
+    embed = discord.Embed(title = f"{member.name} has been banned", description = """
 User {0} has been banned
 Reason:
 ```
@@ -341,7 +341,7 @@ Reason:
 """.format(
         member.mention,
         reason
-    ), color=nextcord.Colour(0x0088FF))
+    ), color=discord.Colour(0x0088FF))
     await ctx.send(embed=embed)
 
 @bot.command( aliases=[], help="""
@@ -350,7 +350,7 @@ Usage:
     - `unban @user`
     - `unban <user id>`
 """)
-async def unban(ctx: commands.context.Context, member: commands.MemberConverter, *, reason: str = "No reason specified"):
+async def unban(ctx: commands.Context, member: commands.MemberConverter, *, reason: str = "No reason specified"):
     #if member is invalid, return and give an error
     if not member:
         await ctx.send("Invalid user")
@@ -372,7 +372,7 @@ async def unban(ctx: commands.context.Context, member: commands.MemberConverter,
 
     await member.unban(reason=reason)
     
-    embed = nextcord.Embed(title = f"{member.name} has been unbanned", description = """
+    embed = discord.Embed(title = f"{member.name} has been unbanned", description = """
 User {0} has been banned
 Reason:
 ```
@@ -381,7 +381,7 @@ Reason:
 """.format(
     member.mention,
     reason
-    ), color=nextcord.Colour(0x0088FF))
+    ), color=discord.Colour(0x0088FF))
     await ctx.send(embed=embed)
 
 #Command that deletes all messages in the specified channel
@@ -392,7 +392,7 @@ Usage:
     - `purge <amount> <channel>`
     - `purge <amount> <channel> <user>`
 """)
-async def purge(ctx: commands.context.Context, amount: int, channel: nextcord.TextChannel = None, user: commands.MemberConverter = None):
+async def purge(ctx: commands.Context, amount: int, channel: discord.TextChannel = None, user: commands.MemberConverter = None):
     if not channel:
         channel = ctx.channel
     
@@ -422,7 +422,7 @@ Gets the bots uptime
 Usage:
     - `uptime`
 """)
-async def uptime(ctx: commands.context.Context):
+async def uptime(ctx: commands.Context):
     currentTime = time.time()
     difference = currentTime - startTime
 
@@ -440,13 +440,13 @@ Gets the server's rules
 Usage:
     - `rules`
 """)
-async def rules(ctx: commands.context.Context):
+async def rules(ctx: commands.Context):
     ruleschannel = ctx.guild.rules_channel
     # Get oldest message in rules channel
     message = await ruleschannel.history(limit=1, oldest_first=True).flatten()
     rules = message[0].content.replace("@everyone", "")
     # Create a new embed with the rules
-    embed = nextcord.Embed(title = f"{ctx.guild.name}'s rules", description = rules, color = nextcord.Colour(0x0088FF))
+    embed = discord.Embed(title = f"{ctx.guild.name}'s rules", description = rules, color = discord.Colour(0x0088FF))
     await ctx.send(embed=embed)
 
 # Thanks command
@@ -456,7 +456,7 @@ Usage:
     - `thanks @user`
     - `thanks <user id>`
 """)
-async def thanks(ctx: commands.context.Context, member: commands.MemberConverter):
+async def thanks(ctx: commands.Context, member: commands.MemberConverter):
     if not member:
         await ctx.send("Invalid user")
         return
@@ -473,7 +473,7 @@ async def thanks(ctx: commands.context.Context, member: commands.MemberConverter
     #    return
     if not ctx.author.guild_permissions.manage_messages:
         return
-    embed = nextcord.Embed(title = f"{ctx.author.name} has thanked {member.name}", description = "", color = nextcord.Colour(0x0088FF))
+    embed = discord.Embed(title = f"{ctx.author.name} has thanked {member.name}", description = "", color = discord.Colour(0x0088FF))
     await ctx.send(embed=embed)
 
 @bot.command(aliases=[], help="""
@@ -481,11 +481,11 @@ Sends a message to all members of the server that it was sent in
 Usage:
     - `botsend <message>`
 """)
-async def botsend(ctx: commands.context.Context, *, message: str):
+async def botsend(ctx: commands.Context, *, message: str):
     # check if the user is the owner of the bot, if it isn't, return
     if not ctx.author.id in bot.owner_ids:
         return
-    embed = nextcord.Embed(title = f"Message from {ctx.guild.name}", description = message, color = nextcord.Colour(0x0088FF))
+    embed = discord.Embed(title = f"Message from {ctx.guild.name}", description = message, color = discord.Colour(0x0088FF))
     embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar.url)
     embed.set_footer(text=f"If this is being spammed, please leave the server this message originated from or contact the bot owner (<@{bot.owner_ids[0]}>)")
     for member in ctx.guild.members:
@@ -501,7 +501,7 @@ Usage:
     - `karpe @user`
     - `karpe <user id>`
 """)
-async def karpe(ctx: commands.context.Context, member: commands.MemberConverter):
+async def karpe(ctx: commands.Context, member: commands.MemberConverter):
     if not member:
         await ctx.send("Invalid user")
         return
@@ -525,7 +525,7 @@ Usage:
     - `addcoins @user <amount>`
     - `addcoins <user id> <amount>`
 """)
-async def addcoins(ctx: commands.context.Context, member: commands.MemberConverter, amount: float):
+async def addcoins(ctx: commands.Context, member: commands.MemberConverter, amount: float):
     if not member:
         await ctx.send("Invalid user")
         return
@@ -552,7 +552,7 @@ Usage:
     - `removecoins @user <amount>`
     - `removecoins <user id> <amount>`
 """)
-async def removecoins(ctx: commands.context.Context, member: commands.MemberConverter, amount: float):
+async def removecoins(ctx: commands.Context, member: commands.MemberConverter, amount: float):
     if not member:
         await ctx.send("Invalid user")
         return
@@ -579,7 +579,7 @@ Usage:
     - `setcoins @user <amount>`
     - `setcoins <user id> <amount>`
 """)
-async def setcoins(ctx: commands.context.Context, member: commands.MemberConverter, amount: float):
+async def setcoins(ctx: commands.Context, member: commands.MemberConverter, amount: float):
     if not member:
         await ctx.send("Invalid user")
         return
@@ -613,7 +613,7 @@ Usage:
     - `balance @user`
     - `balance <user id>`
 """)
-async def balance(ctx: commands.context.Context, member: commands.MemberConverter = None):
+async def balance(ctx: commands.Context, member: commands.MemberConverter = None):
     if not member:
         member = ctx.author
     if not member.id:
@@ -641,7 +641,7 @@ Gives you your daily coins
 Usage:
     - `daily`
 """)
-async def daily(ctx: commands.context.Context):
+async def daily(ctx: commands.Context):
     if not save['config']:
         save['config'] = {}
     if not save['config']['daily']:
@@ -661,12 +661,12 @@ async def daily(ctx: commands.context.Context):
     # Check if the user has already claimed their daily today (compare the current day)
     if save['users'][ctx.author.id]['daily'] <= (time.time() - 86400):
         await addCoins(ctx.author, daily_coins)
-        embed = nextcord.Embed(title = f"Daily coins", description = f"You have received {daily_coins} {coinName}", color = nextcord.Colour(0x0088FF))
+        embed = discord.Embed(title = f"Daily coins", description = f"You have received {daily_coins} {coinName}", color = discord.Colour(0x0088FF))
         embed.set_footer(text=f"You can claim your daily coins again in 24 hours")
         await ctx.send(embed=embed)
         save['users'][ctx.author.id]['daily'] = time.time()
     else:
-        embed = nextcord.Embed(title = f"Daily coins", description = f"You have already claimed your daily coins today", color = nextcord.Colour(0x0088FF))
+        embed = discord.Embed(title = f"Daily coins", description = f"You have already claimed your daily coins today", color = discord.Colour(0x0088FF))
         # Format the time left
         time_left = 86400 - (time.time() - save['users'][ctx.author.id]['daily'])
         hours = int(time_left / 3600)
@@ -684,7 +684,7 @@ Flips a coin and gives you either heads or tails
 Usage:
     - `coinflip`
 """)
-async def coinflip(ctx: commands.context.Context):
+async def coinflip(ctx: commands.Context):
     # Get a random number between 0 and 1
     coin = random.randint(0, 1)
     if coin <= 0.5:
@@ -699,7 +699,7 @@ You can bet on heads or tails
 Usage:
     - `cashflip <amount> <heads/tails>`
 """)
-async def cashflip(ctx: commands.context.Context, amount: float, bet: str):
+async def cashflip(ctx: commands.Context, amount: float, bet: str):
     # Check if the bet is heads or tails
     if not bet.lower() in ['heads', 'tails']:
         await ctx.send("Invalid bet")
@@ -715,18 +715,18 @@ async def cashflip(ctx: commands.context.Context, amount: float, bet: str):
     if not 'coins' in save['users'][ctx.author.id]:
         save['users'][ctx.author.id]['coins'] = 0
     if save['users'][ctx.author.id]['coins'] < amount:
-        embed=nextcord.Embed(title="Cashflip", description=f"You don't have enough coins to bet {amount} {coinName}", color=nextcord.Colour(0x0088FF))
+        embed=discord.Embed(title="Cashflip", description=f"You don't have enough coins to bet {amount} {coinName}", color=discord.Colour(0x0088FF))
         await ctx.send(embed=embed)
         return
     
     if amount <= 0:
-        embed=nextcord.Embed(title="Cashflip", description="You must bet more than 0 coins", color=nextcord.Colour(0x0088FF))
+        embed=discord.Embed(title="Cashflip", description="You must bet more than 0 coins", color=discord.Colour(0x0088FF))
         await ctx.send(embed=embed)
         return
     
     # Is amount infinite or nan?
     if math.isnan(amount) or math.isinf(amount):
-        embed=nextcord.Embed(title="Cashflip", description="You must bet more than 0 coins", color=nextcord.Colour(0x0088FF))
+        embed=discord.Embed(title="Cashflip", description="You must bet more than 0 coins", color=discord.Colour(0x0088FF))
         await ctx.send(embed=embed)
         return
 
@@ -744,7 +744,7 @@ async def cashflip(ctx: commands.context.Context, amount: float, bet: str):
     coinStr = "Heads"
     if coin >= 0.5:
         coinStr = "Tails"
-    embed = nextcord.Embed(title = f"Cashflip: {coinStr}", description = f"You have flipped a coin and got {coinStr}", color = nextcord.Colour(0x0088FF))
+    embed = discord.Embed(title = f"Cashflip: {coinStr}", description = f"You have flipped a coin and got {coinStr}", color = discord.Colour(0x0088FF))
 
     # Check if the user won or lost
     if coin <= 0.5 and bet == "heads":
@@ -766,7 +766,7 @@ Pay someone
 Usage:
     - `pay <user> <amount>`
 """)
-async def pay(ctx: commands.context.Context, user: nextcord.Member, amount: float):
+async def pay(ctx: commands.Context, user: discord.Member, amount: float):
     
     originalAmount = amount
 
@@ -795,19 +795,19 @@ async def pay(ctx: commands.context.Context, user: nextcord.Member, amount: floa
     if not 'coins' in save['users'][ctx.author.id]:
         save['users'][ctx.author.id]['coins'] = 0
     if save['users'][ctx.author.id]['coins'] < amount:
-        embed=nextcord.Embed(title="Pay", description=f"You don't have enough coins to pay {amount} {coinName}", color=nextcord.Colour(0x0088FF))
+        embed=discord.Embed(title="Pay", description=f"You don't have enough coins to pay {amount} {coinName}", color=discord.Colour(0x0088FF))
         embed.set_footer(text=f"You have {save['users'][ctx.author.id]['coins']} {coinName}, {tax}% tax has been taken")
         await ctx.send(embed=embed)
         return
     
     if amount <= 0.1:
-        embed=nextcord.Embed(title="Pay", description="You must pay more than 0.1 coins", color=nextcord.Colour(0x0088FF))
+        embed=discord.Embed(title="Pay", description="You must pay more than 0.1 coins", color=discord.Colour(0x0088FF))
         await ctx.send(embed=embed)
         return
     
     # Is amount infinite or nan?
     if math.isnan(amount) or math.isinf(amount):
-        embed=nextcord.Embed(title="Pay", description="You must pay more than 0 coins", color=nextcord.Colour(0x0088FF))
+        embed=discord.Embed(title="Pay", description="You must pay more than 0 coins", color=discord.Colour(0x0088FF))
         await ctx.send(embed=embed)
         return
     
@@ -817,7 +817,7 @@ async def pay(ctx: commands.context.Context, user: nextcord.Member, amount: floa
     taxed = amount - originalAmount
     # Round taxed to 2 decimal places
     taxed = round(taxed, 3)
-    embed=nextcord.Embed(title="Payment succesfull", description=f"You have paid {user.name} {originalAmount} {coinName}\n({taxed} {coinName} have been taxed)", color=nextcord.Colour(0x0088FF))
+    embed=discord.Embed(title="Payment succesfull", description=f"You have paid {user.name} {originalAmount} {coinName}\n({taxed} {coinName} have been taxed)", color=discord.Colour(0x0088FF))
     await ctx.send(embed=embed)
 
 # Leaderboard command
@@ -826,8 +826,8 @@ Gets the top 10 users with the most coins
 Usage:
     - `leaderboard`
 """)
-async def leaderboard(ctx: commands.context.Context):
-    loadingEmbed = nextcord.Embed(title = "Loading...", color = nextcord.Colour(0x0088FF), description = "Please wait whilst the leaderboard is being loaded")
+async def leaderboard(ctx: commands.Context):
+    loadingEmbed = discord.Embed(title = "Loading...", color = discord.Colour(0x0088FF), description = "Please wait whilst the leaderboard is being loaded")
     loadingMessage = await ctx.send(embed=loadingEmbed)
     # Get the top 10 users
     users = save['users']
@@ -855,7 +855,7 @@ async def leaderboard(ctx: commands.context.Context):
     users.sort(key=sort_by_coins, reverse=True)
 
 
-    embed = nextcord.Embed(title = f"Leaderboard (Top {min(10, users.__len__())} / {users.__len__()})", color = nextcord.Colour(0x0088FF))
+    embed = discord.Embed(title = f"Leaderboard (Top {min(10, users.__len__())} / {users.__len__()})", color = discord.Colour(0x0088FF))
     # Add the top 10 users
     for i, user in enumerate(users):
         try:
@@ -909,11 +909,11 @@ Gets the server info
 Usage:
     - `serverinfo`
 """)
-async def serverinfo(ctx: commands.context.Context):
+async def serverinfo(ctx: commands.Context):
     # Get the guild
     guild = ctx.guild
 
-    embed = nextcord.Embed(title = f"Server info for {guild.name}", color = nextcord.Colour(0x0088FF))
+    embed = discord.Embed(title = f"Server info for {guild.name}", color = discord.Colour(0x0088FF))
     embed.add_field(name = "Server ID", value = guild.id, inline = False)
     embed.add_field(name = "Server owner", value = f"{guild.owner.name}#{guild.owner.discriminator}", inline = False)
     embed.add_field(name = "Server created at", value = guild.created_at.strftime("%d/%m/%Y %H:%M:%S"), inline = False)
@@ -930,21 +930,21 @@ Sets the slowmode for the server
 Usage:
     - `slowmode <seconds>`
 """)
-async def slowmode(ctx: commands.context.Context, seconds: int):
+async def slowmode(ctx: commands.Context, seconds: int):
     # Check if the user has the permission to use this command
     if not ctx.author.guild_permissions.manage_messages:
-        embed = nextcord.Embed(title = "Slowmode", description = "You do not have the permission to use this command", color = nextcord.Colour(0x0088FF))
+        embed = discord.Embed(title = "Slowmode", description = "You do not have the permission to use this command", color = discord.Colour(0x0088FF))
         await ctx.send(embed=embed)
         return
     # Check if the user has the permission to use this command
     if not ctx.author.guild_permissions.manage_channels:
-        embed = nextcord.Embed(title = "Slowmode", description = "You do not have the permission to use this command", color = nextcord.Colour(0x0088FF))
+        embed = discord.Embed(title = "Slowmode", description = "You do not have the permission to use this command", color = discord.Colour(0x0088FF))
         await ctx.send(embed=embed)
         return
     
     # Check if the input is valid
     if seconds < 0 or seconds > 21600:
-        embed = nextcord.Embed(title = "Invalid delay", description = "The delay should be between 0 and 21600", color = nextcord.Colour(0xFF0000))
+        embed = discord.Embed(title = "Invalid delay", description = "The delay should be between 0 and 21600", color = discord.Colour(0xFF0000))
         await ctx.send(embed=embed)
         return
 
@@ -952,7 +952,7 @@ async def slowmode(ctx: commands.context.Context, seconds: int):
     await ctx.channel.edit(slowmode_delay=seconds)
 
     # Create the embed
-    embed = nextcord.Embed(title = "Slowmode", description = f"The slowmode has been set to {seconds} seconds", color = nextcord.Colour(0x0088FF))
+    embed = discord.Embed(title = "Slowmode", description = f"The slowmode has been set to {seconds} seconds", color = discord.Colour(0x0088FF))
     await ctx.send(embed=embed)
 
 # Raid command
@@ -961,25 +961,25 @@ Raid a hub (announces it)
 Usage:
     - `raid <hub> <time>`
 """)
-async def raid(ctx: commands.context.Context, hub: str, intime: int = 3600):
+async def raid(ctx: commands.Context, hub: str, intime: int = 3600):
     # Check if the user has the permission to use this command
     if not ctx.author.guild_permissions.manage_messages:
-        embed = nextcord.Embed(title = "Raid", description = "You do not have the permission to use this command", color = nextcord.Colour(0x0088FF))
+        embed = discord.Embed(title = "Raid", description = "You do not have the permission to use this command", color = discord.Colour(0x0088FF))
         await ctx.send(embed=embed)
         return
     # Check if the user has the permission to use this command
     if not ctx.author.guild_permissions.manage_channels:
-        embed = nextcord.Embed(title = "Raid", description = "You do not have the permission to use this command", color = nextcord.Colour(0x0088FF))
+        embed = discord.Embed(title = "Raid", description = "You do not have the permission to use this command", color = discord.Colour(0x0088FF))
         await ctx.send(embed=embed)
         return
 
     # Creates an event lasting for the given time
-    event = ctx.guild.create_scheduled_event(end_time=datetime.time().fold + intime, name = f"Raid {hub}", start_time=datetime.time(), entity_type=nextcord.ScheduledEventEntityType.external, description=f"Raiding {hub}")
+    event = ctx.guild.create_scheduled_event(end_time=datetime.time().fold + intime, name = f"Raid {hub}", start_time=datetime.time(), entity_type=discord.ScheduledEventEntityType.external, description=f"Raiding {hub}")
 
     # Create the embed
     # IntimeStr is the time in the format of "HH:MM"
     intimeStr = str(datetime.timedelta(seconds=intime))
-    embed = nextcord.Embed(title = "RAID", description = f"{hub.capitalize()} is being raided for {intimeStr}!", color = nextcord.Colour(0x0088FF))
+    embed = discord.Embed(title = "RAID", description = f"{hub.capitalize()} is being raided for {intimeStr}!", color = discord.Colour(0x0088FF))
     await ctx.send("<@&976488038786035772>", embed=embed)
     await ctx.message.delete()
 
@@ -989,10 +989,10 @@ Calculates math expressions using the python package `numexpr`.
 Usage:
     - `numexpr <expression>`
 """)
-async def numexpr(ctx: commands.context.Context, *, expression: str):
+async def numexpr(ctx: commands.Context, *, expression: str):
     # Check if the user has the permission to use this command
     if not ctx.author.id in bot.owner_ids:
-        embed = nextcord.Embed(title = "Numexpr error", description = "You do not have the permission to use this command", color = nextcord.Colour(0xFF0000))
+        embed = discord.Embed(title = "Numexpr error", description = "You do not have the permission to use this command", color = discord.Colour(0xFF0000))
         await ctx.send(embed=embed)
         return
     
@@ -1000,11 +1000,11 @@ async def numexpr(ctx: commands.context.Context, *, expression: str):
     try:
         result = numexpr.evaluate(expression).item()
     except Exception as e:
-        embed = nextcord.Embed(title = "Numexpr Error", description = f"The expression could not be calculated: {e}", color = nextcord.Colour(0xFF0000))
+        embed = discord.Embed(title = "Numexpr Error", description = f"The expression could not be calculated: {e}", color = discord.Colour(0xFF0000))
         await ctx.send(embed=embed)
         return
     
-    embed = nextcord.Embed(title = "Calc", description = f"The result is: {result}", color = nextcord.Colour(0x0088FF))
+    embed = discord.Embed(title = "Calc", description = f"The result is: {result}", color = discord.Colour(0x0088FF))
     await ctx.send(embed=embed)
 
 # Solve command
@@ -1013,10 +1013,10 @@ Solves an equation for variables
 Usage:
     - `solve <equation>`
 """)
-async def solve(ctx: commands.context.Context, *, equation: str):
+async def solve(ctx: commands.Context, *, equation: str):
     # Only bot owners may use it for now as it may cause code injection
     if not ctx.author.id in bot.owner_ids:
-        embed = nextcord.Embed(title = "Solve", description = "You do not have the permission to use this command", color = nextcord.Colour(0x0088FF))
+        embed = discord.Embed(title = "Solve", description = "You do not have the permission to use this command", color = discord.Colour(0x0088FF))
         await ctx.send(embed=embed)
         return
 
@@ -1033,7 +1033,7 @@ async def solve(ctx: commands.context.Context, *, equation: str):
     result = sympy.solve(equation)
 
     # Create the embed
-    embed = nextcord.Embed(title = "Solve", description = f"The result is:\n```\n{result}```", color = nextcord.Colour(0x0088FF))
+    embed = discord.Embed(title = "Solve", description = f"The result is:\n```\n{result}```", color = discord.Colour(0x0088FF))
     await ctx.send(embed=embed)
 
 bot.remove_command("help") # Remove default help command
@@ -1046,17 +1046,17 @@ Usage:
  - `help search <searchterm>` - Searches for commands
  - `help query <query>` - Searches for commands
 """ )
-async def help(ctx: commands.context.Context, command: str = "", arg1: str = ""):
+async def help(ctx: commands.Context, command: str = "", arg1: str = ""):
     if command == "" or command.lower() == "help":
         # Get own description
         description = bot.get_command("help").description
-        embed = nextcord.Embed(title = "Help subcommands:", description = """
+        embed = discord.Embed(title = "Help subcommands:", description = """
  - `help` - Shows this message
  - `help command <commandname>` - Shows the help for a specific command
  - `help list` - Shows a list of all commands
  - `help search <searchterm>` - Searches for commands
  - `help query <query>` - Searches for commands
-        """, color = nextcord.Colour(0x0088FF))
+        """, color = discord.Colour(0x0088FF))
         await ctx.send(embed=embed)
         return
     if command.lower() == "list":
@@ -1070,10 +1070,10 @@ async def help(ctx: commands.context.Context, command: str = "", arg1: str = "")
                 helpstr += f" - **{command.name} ({' | '.join(command.aliases)})**\n"
             else:
                 helpstr += f" - **{command.name}**\n"
-        embed = nextcord.Embed(
+        embed = discord.Embed(
             title = "Commands:",
             description = helpstr,
-            color = nextcord.Colour(0x0088FF)
+            color = discord.Colour(0x0088FF)
         )
         await ctx.send(embed=embed)
     elif command.lower() == "command":
@@ -1089,10 +1089,10 @@ async def help(ctx: commands.context.Context, command: str = "", arg1: str = "")
                         helpcommand = command
         
         if helpcommand != None:
-            embed = nextcord.Embed(
+            embed = discord.Embed(
                 title = f"Command {helpcommand.name}:",
                 description = helpcommand.help,
-                color = nextcord.Colour(0x0088FF)
+                color = discord.Colour(0x0088FF)
             )
 
             embed.set_footer(text=helpcommand.hidden)
@@ -1102,10 +1102,10 @@ async def help(ctx: commands.context.Context, command: str = "", arg1: str = "")
                 embed.description = "This command has no help description"
             await ctx.send(embed=embed)
         else:
-            embed = nextcord.Embed(
+            embed = discord.Embed(
                 title = f"Help - Command not found",
                 description = "This command doesn't exist, or you might have misspelled it",
-                color = nextcord.Colour(0x0088FF)
+                color = discord.Colour(0x0088FF)
             )
             await ctx.send(embed=embed)
     elif command.lower() == "search" or command.lower() == "query":
@@ -1123,27 +1123,27 @@ async def help(ctx: commands.context.Context, command: str = "", arg1: str = "")
                     foundcommands.append(command)
         
         if len(foundcommands) == 0:
-            embed = nextcord.Embed(
+            embed = discord.Embed(
                 title = "Help - Search",
                 description = "No commands with this query were found",
-                color = nextcord.Colour(0x0088FF)
+                color = discord.Colour(0x0088FF)
             )
             await ctx.send(embed=embed)
         else:
             # Remove duplicates
             foundcommands = list(dict.fromkeys(foundcommands))
-            embed = nextcord.Embed(
+            embed = discord.Embed(
                 title = "Help - Search results",
                 description = " - " + "\n - ".join([f"**{command.name} ({', '.join(command.aliases)})**" for command in foundcommands]),
-                color = nextcord.Colour(0x0088FF)
+                color = discord.Colour(0x0088FF)
             )
             await ctx.send(embed=embed)
 
     else:
-        embed = nextcord.Embed(
+        embed = discord.Embed(
             title = f"Help - Command not found",
             description = "This subcommand doesn't exist, or you might have misspelled it",
-            color = nextcord.Colour(0x0088FF)
+            color = discord.Colour(0x0088FF)
         )
         await ctx.send(embed=embed)
 
@@ -1153,10 +1153,10 @@ Prints the message to the console
 Usage:
     - `print <message>`
 """)
-async def printmsg(ctx: commands.context.Context, *, message: str):
+async def printmsg(ctx: commands.Context, *, message: str):
     # Only bot owners may use it
     if not ctx.author.id in bot.owner_ids:
-        embed = nextcord.Embed(title = "Print", description = "You do not have the permission to use this command", color = nextcord.Colour(0x0088FF))
+        embed = discord.Embed(title = "Print", description = "You do not have the permission to use this command", color = discord.Colour(0x0088FF))
         await ctx.send(embed=embed)
         return
 
@@ -1183,14 +1183,14 @@ async def on_ready():
 
     # bot.command_prefix.append(bot.user.mention.replace('@', '@!'))
 
-    presence = nextcord.Activity()
+    presence = discord.Activity()
     presence.application_id = 945283628018057287
     presence.name = "Fish"
     presence.url = "https://example.org"
-    presence.type = nextcord.ActivityType.watching
-    presence.buttons = nextcord.types.activity.ActivityButton()
+    presence.type = discord.ActivityType.watching
+    presence.buttons = discord.types.activity.ActivityButton()
 
-    await bot.change_presence(status=nextcord.Status.online, activity=presence)
+    await bot.change_presence(status=discord.Status.online, activity=presence)
 
     # Print that the bot is done initializing
     print(Fore.MAGENTA + "Bot initialized" + Fore.RESET)
@@ -1198,7 +1198,7 @@ async def on_ready():
     #await bot.get_guild(945283628018057287).get_channel(945283628018057290).send(embed=embed)
 
 @bot.event
-async def on_typing(channel: nextcord.abc.Messageable, user: nextcord.User, when: datetime):
+async def on_typing(channel: discord.abc.Messageable, user: discord.User, when: datetime):
     # print("User " + user.name + " started typing")
     return
 
@@ -1206,7 +1206,7 @@ async def on_typing(channel: nextcord.abc.Messageable, user: nextcord.User, when
 lastMessageTime = {}
 
 @bot.event
-async def on_message(message: nextcord.Message):
+async def on_message(message: discord.Message):
     # Check if the message is the ping message
     if message.author.bot:
         return
@@ -1243,10 +1243,10 @@ async def on_message(message: nextcord.Message):
         if message.author.id in bot.owner_ids:
             await bot.process_commands(message)
         else:
-            embed = nextcord.Embed(
+            embed = discord.Embed(
                 title = "Error",
                 description = "The bot is currently in maintanance mode",
-                color = nextcord.Colour(0xFFFF00)
+                color = discord.Colour(0xFFFF00)
             )
             await message.channel.send(embed=embed)
     else:
@@ -1256,7 +1256,7 @@ async def on_message(message: nextcord.Message):
 
 # On message edit
 @bot.event
-async def on_message_edit(before: nextcord.Message, after: nextcord.Message):
+async def on_message_edit(before: discord.Message, after: discord.Message):
     if before.author.bot:
         return
     if before.author == bot.user:
@@ -1269,30 +1269,30 @@ async def on_message_edit(before: nextcord.Message, after: nextcord.Message):
 
 @bot.event
 async def on_command_error(ctx: commands.Context, error: commands.CommandError):
-    if isinstance(error, commands.errors.CommandNotFound):
-        embed = nextcord.Embed(color=nextcord.Colour(0xFF0000), title="Command not found") #,  description=f"Command  not found")
+    if isinstance(error, discord.ext.commands.CommandNotFound):
+        embed = discord.Embed(color=discord.Colour(0xFF0000), title="Command not found") #,  description=f"Command  not found")
         await ctx.send(embed=embed)
         return
-    elif isinstance(error, commands.errors.CommandInvokeError):
+    elif isinstance(error, discord.ext.commands.CommandInvokeError):
         if (isinstance(error.original, AuthenticationException)):
-            embed = nextcord.Embed(color=nextcord.Colour(0xFF0000), title="Permission denied", description="You aren't allowed to do this") #,  description=f"Command  not found")
+            embed = discord.Embed(color=discord.Colour(0xFF0000), title="Permission denied", description="You aren't allowed to do this") #,  description=f"Command  not found")
             await ctx.send(embed=embed)
             return
         else:
-            embed = nextcord.Embed(color=nextcord.Colour(0xFF0000), title="An error occured", description=f"```py\n{str(error)}\n```")
+            embed = discord.Embed(color=discord.Colour(0xFF0000), title="An error occured", description=f"```py\n{str(error)}\n```")
             await ctx.send(embed=embed)
             return
-    elif isinstance(error, commands.errors.MissingRequiredArgument):
+    elif isinstance(error, discord.ext.commands.MissingRequiredArgument):
         errStr = error.args[0].replace(" is a required argument that is missing.", "")
-        embed = nextcord.Embed(color=nextcord.Colour(0xFF0000), title="A required argument is missing", description=f"Please give a value for `{errStr}`")
+        embed = discord.Embed(color=discord.Colour(0xFF0000), title="A required argument is missing", description=f"Please give a value for `{errStr}`")
         await ctx.send(embed=embed)
         return
-    embed = nextcord.Embed(color=nextcord.Colour(0xFF0000), title="An error occured", description=f"```py\n{str(error)}\n```")
+    embed = discord.Embed(color=discord.Colour(0xFF0000), title="An error occured", description=f"```py\n{str(error)}\n```")
     await ctx.send(embed=embed)
     await ctx.message.add_reaction("⚠️")
 
 @bot.event
-async def on_webhooks_update(channel: nextcord.TextChannel):
+async def on_webhooks_update(channel: discord.TextChannel):
     while(True):
         for item in bot.guilds:
             for item2 in (await item.webhooks()):

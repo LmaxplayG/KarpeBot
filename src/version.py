@@ -1,4 +1,4 @@
-import nextcord
+import discord
 import sys
 import os
 import platform
@@ -8,8 +8,8 @@ def getOSVersion():
         return f"Windows 11 (build {platform.version()}) {platform.architecture()[0]}"
     return f"{platform.system()} {platform.release()} (build {platform.version()}) {platform.architecture()[0]}"
 
-def getNextcordVersion():
-    return f"{nextcord.version_info.major}.{nextcord.version_info.minor}.{nextcord.version_info.micro} {nextcord.version_info.releaselevel}"
+def getDiscordVersion():
+    return f"{discord.version_info.major}.{discord.version_info.minor}.{discord.version_info.micro} {discord.version_info.releaselevel}"
 
 def getPythonVersion():
     return f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro} {sys.version_info.releaselevel}"
