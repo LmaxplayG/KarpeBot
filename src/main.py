@@ -3,29 +3,25 @@ import math
 import sys
 import datetime
 import time
-from time import sleep
 import re
 import ruamel.yaml as yaml
 import pathlib
-import json
-import asyncio
+#import json
+#import asyncio
 import random
-import traceback
-import hashlib
+#import traceback
+#import hashlib
 import numexpr
 import sympy
-import numpy
-import copy
+#import numpy
+#import copy
 
 import atexit
 
-from discord.types import activity
 import discord.client
 import discord.abc
 import discord.types.activity
-from discord.abc import Snowflake
 from discord.ext import commands
-import discord.abc
 
 from colorama import Fore, Back, Style
 
@@ -39,7 +35,12 @@ save: dict = {}
 
 yml = yaml.YAML()
 
-version = Version(major=2, minor=1, patch=2)
+VERSION = Version(major=2, minor=2, patch=0)
+LOG = False
+COINNAME = "Karpcoins"
+MAINTANANCE = False
+
+autoResponses = {}
 
 async def addCoins(member, amount):
     if not 'users' in save:
@@ -83,14 +84,8 @@ except FileNotFoundError:
     print(f"{Fore.RED}[ERROR]{Style.RESET_ALL} Could not find save.yaml. Creating it now.")
     with open('save.yaml', 'w') as f:
         yaml.dump(save, f)
+
 intents = discord.Intents.all()
-
-LOG = False
-COINNAME = "Karpcoins"
-MAINTANANCE = False
-
-autoResponses = {}
-
 
 bot = commands.Bot(command_prefix=(getPrefix), intents=intents, owner_ids=[941433256010727484])
 
@@ -112,7 +107,7 @@ Usage:
 """ )
 async def about(ctx: commands.Context):
     embed = discord.Embed(title = f"About KarpeBot", description = f"""
-**KarpeBot version {version}**
+**KarpeBot version {VERSION}**
 OS: {getOSVersion()}
 Python: {getPythonVersion()}
 Pycord: {getDiscordVersion()}
@@ -1171,6 +1166,20 @@ async def printmsg(ctx: commands.Context, *, message: str):
     # message = message.strip()
 
     print(message)
+
+@bot.command(aliases=["del"], help="""
+Deletes the message with the specified ID/reply
+Usage:
+    - `delmsg <id>`
+    - <reply> `delmsg`
+""")
+async def delmsg(ctx: commands.Context, id: int = 0):
+    if id == 0:
+        if ctx.message.reference:
+            msg = await ctx.channel.fetch_message(ctx.message.reference.message_id)
+            await msg.delete()
+            #await ctx.send("Message deleted successfully", delete_after=1)
+            await ctx.message.delete()
 
 startTime = time.time()
 
