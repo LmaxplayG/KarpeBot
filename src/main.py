@@ -115,7 +115,7 @@ async def about(ctx: commands.context.Context):
 **KarpeBot version {version}**
 Running on {getOSVersion()}
 Python {getPythonVersion()}
-Nextcord {getNextcordVersion()}
+nextcord {getNextcordVersion()}
     """,
     color = nextcord.Colour(0x0088FF)
     )
@@ -1175,7 +1175,7 @@ startTime = time.time()
 
 @bot.event
 async def on_ready():
-    print(Fore.CYAN + "Bot ready" + Fore.RESET)
+    print(Fore.MAGENTA + "Bot ready" + Fore.RESET)
 
     # Store the bot's uptime
     startTime = time.time()
@@ -1192,7 +1192,7 @@ async def on_ready():
     await bot.change_presence(status=nextcord.Status.online, activity=presence)
 
     # Print that the bot is done initializing
-    print(Fore.CYAN + "Bot initialized" + Fore.RESET)
+    print(Fore.MAGENTA + "Bot initialized" + Fore.RESET)
 
     #await bot.get_guild(945283628018057287).get_channel(945283628018057290).send(embed=embed)
 
@@ -1307,6 +1307,6 @@ async def close():
     print("Bot closed")
     exit()
 
-print(Fore.CYAN + "Bot starting" + Fore.RESET)
+print(Fore.MAGENTA + "Bot starting" + Fore.RESET)
 
 bot.run(dotenv.get_key(pathlib.Path(__file__).parent.joinpath("./.env"), "TOKEN"))
