@@ -23,7 +23,6 @@ from discord.types import activity
 import discord.client
 import discord.abc
 import discord.types.activity
-import discord.ext.commands
 from discord.abc import Snowflake
 from discord.ext import commands
 import discord.abc
@@ -90,7 +89,7 @@ maintanananceMode = False
 
 autoResponses = {}
 
-version = Version(major=2, minor=0, patch=0)
+version = Version(major=2, minor=1, patch=0)
 
 bot = commands.Bot(command_prefix=(getPrefix), intents=intents, owner_ids=[941433256010727484])
 
@@ -1269,11 +1268,11 @@ async def on_message_edit(before: discord.Message, after: discord.Message):
 
 @bot.event
 async def on_command_error(ctx: commands.Context, error: commands.CommandError):
-    if isinstance(error, discord.ext.commands.CommandNotFound):
+    if isinstance(error, commands.CommandNotFound):
         embed = discord.Embed(color=discord.Colour(0xFF0000), title="Command not found") #,  description=f"Command  not found")
         await ctx.send(embed=embed)
         return
-    elif isinstance(error, discord.ext.commands.CommandInvokeError):
+    elif isinstance(error, commands.CommandInvokeError):
         if (isinstance(error.original, AuthenticationException)):
             embed = discord.Embed(color=discord.Colour(0xFF0000), title="Permission denied", description="You aren't allowed to do this") #,  description=f"Command  not found")
             await ctx.send(embed=embed)
@@ -1282,7 +1281,7 @@ async def on_command_error(ctx: commands.Context, error: commands.CommandError):
             embed = discord.Embed(color=discord.Colour(0xFF0000), title="An error occured", description=f"```py\n{str(error)}\n```")
             await ctx.send(embed=embed)
             return
-    elif isinstance(error, discord.ext.commands.MissingRequiredArgument):
+    elif isinstance(error, commands.MissingRequiredArgument):
         errStr = error.args[0].replace(" is a required argument that is missing.", "")
         embed = discord.Embed(color=discord.Colour(0xFF0000), title="A required argument is missing", description=f"Please give a value for `{errStr}`")
         await ctx.send(embed=embed)
