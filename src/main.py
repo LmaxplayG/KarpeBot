@@ -7,8 +7,8 @@ import time
 import re
 import ruamel.yaml as yaml
 import pathlib
-import json
-import asyncio
+#import json
+#import asyncio
 import random
 #import traceback
 #import hashlib
@@ -16,8 +16,6 @@ import numexpr
 import sympy
 #import numpy
 #import copy
-
-import atexit
 
 import discord.client
 import discord.abc
