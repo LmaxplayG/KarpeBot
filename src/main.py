@@ -1,3 +1,4 @@
+from argparse import ArgumentTypeError
 import dotenv
 import math
 import sys
@@ -70,7 +71,6 @@ def loadData():
 
 loadData()
 saveData()
-print(save)
 
 def getPrefix(bot: commands.Bot, message: discord.Message):
     if not save['guilds']:
@@ -609,6 +609,25 @@ async def setcoins(ctx: commands.Context, member: commands.MemberConverter, amou
     await addCoins(member, 0)
     await ctx.send(f"Set {member.name}'s coins to {amount}")
 
+@bot.command(aliases=[], help="""
+Adds coins to the specified user
+Usage:
+    - `addcoins @user <amount>`
+    - `addcoins <user id> <amount>`
+""")
+async def addcoinsall(ctx: commands.Context, amount: float):
+    if not ctx.author.id in bot.owner_ids:
+        await ctx.send("You do not have the permission `BOT.OWNER`")
+        return
+
+    items: set = set()
+    for guild in bot.guilds:
+        async for member in guild.fetch_members():
+            if not member.bot:
+                items.add(member)
+    for item in items:
+        await addCoins(item, amount)
+
 # Balance command
 @bot.command(aliases=['bal'], help="""
 Gets the balance of the specified user
@@ -752,8 +771,8 @@ async def cashflip(ctx: commands.Context, amount: float, bet: str):
     # Check if the user won or lost
     if coin <= 0.5 and bet == "heads":
         await addCoins(ctx.author, amount * 0.75)
-        embed.set_footer(text=f"A 25% fee has been taken from your winnings")
         embed.description = f"You won {amount * 0.75} {COINNAME}"
+        embed.set_footer(text=f"A 25% fee has been taken from your winnings")
     elif coin >= 0.5 and bet == "tails":
         await addCoins(ctx.author, amount * 0.75)
         embed.set_footer(text=f"A 25% fee has been taken from your winnings")
@@ -1193,11 +1212,6 @@ startTime = time.time()
 
 @bot.event
 async def on_ready():
-    print(Fore.MAGENTA + "Bot ready" + Fore.RESET)
-
-    # Store the bot's uptime
-    startTime = time.time()
-
     # bot.command_prefix.append(bot.user.mention.replace('@', '@!'))
 
     presence = discord.Activity()
@@ -1213,6 +1227,8 @@ async def on_ready():
     print(Fore.MAGENTA + "Bot initialized" + Fore.RESET)
 
     #await bot.get_guild(945283628018057287).get_channel(945283628018057290).send(embed=embed)
+    print(Fore.MAGENTA + "Bot ready" + Fore.RESET)
+
 
 @bot.event
 async def on_typing(channel: discord.abc.Messageable, user: discord.User, when: datetime):
