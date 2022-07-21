@@ -1,4 +1,5 @@
 from argparse import ArgumentTypeError
+from importlib.resources import path
 import dotenv
 import math
 import sys
@@ -112,12 +113,18 @@ Usage:
  - `about`
 """ )
 async def about(ctx: commands.Context):
+    commit = ""
+    if pathlib.Path(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../.git/refs/heads/master")).exists():
+        commit = f"""
+Commit ID (SHA-1): {pathlib.Path(os.path.join(os.path.dirname(os.path.realpath(__file__)), "../.git/refs/heads/master")).read_text()[0:7]}
+        """.replace("\n", "")
     embed = discord.Embed(title = f"About KarpeBot", description = f"""
 **KarpeBot version {VERSION}**
 OS: {getOSVersion()}
 Python: {getPythonVersion()}
 Pycord: {getDiscordVersion()}
 Repository: <https://github.com/LmaxplayG/Karpebot>
+{commit}
     """,
     color = discord.Colour(0x0088FF)
     )
