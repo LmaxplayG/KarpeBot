@@ -1325,14 +1325,6 @@ async def on_webhooks_update(channel: discord.TextChannel):
         time.sleep(5)
     return
 
-# On close of application, close the bot
-@atexit.register
-async def close():
-    print("Closing bot")
-    await bot.close()
-    print("Bot closed")
-    exit()
-
 print(Fore.MAGENTA + "Bot starting" + Fore.RESET)
 
 bot.run(dotenv.get_key(pathlib.Path(__file__).parent.joinpath("./.env"), "TOKEN"))
